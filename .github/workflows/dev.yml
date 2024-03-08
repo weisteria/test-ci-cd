@@ -6,8 +6,9 @@ on:
       - dev
 
 jobs:
-  deploy:
+  deploy-dev:
     runs-on: ubuntu-latest
+    environment: devlopment
 
     steps:
     - name: Checkout Repository
@@ -28,3 +29,7 @@ jobs:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
         docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+    - name: Run a script
+      run: |
+        echo "I am running a job in the dev env"
+
