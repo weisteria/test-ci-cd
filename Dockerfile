@@ -1,11 +1,8 @@
-# syntax=docker/dockerfile:1
-FROM busybox:latest
-COPY --chmod=755 <<EOF /app/run.sh
-#!/bin/sh
-while true; do
-  echo -ne "The time is now $(date +%T)\\r"
-  sleep 1
-done
-EOF
+# Utilisez une image légère comme base
+FROM nginx:alpine
 
-ENTRYPOINT /app/run.sh
+# Copiez tous les fichiers du dossier src dans le répertoire web du serveur Nginx
+COPY src/ /usr/share/nginx/html/
+
+# Exposez le port 80, par défaut pour HTTP
+EXPOSE 80
