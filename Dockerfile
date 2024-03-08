@@ -1,8 +1,16 @@
-# Utilisez une image légère comme base
-FROM nginx:alpine
+FROM node:21-alpine as dev
 
-# Copiez tous les fichiers du dossier src dans le répertoire web du serveur Nginx
-COPY src/ /usr/share/nginx/html/
+WORKDIR /usr/src/app
 
-# Exposez le port 80, par défaut pour HTTP
-EXPOSE 80
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
+
