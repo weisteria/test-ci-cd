@@ -35,11 +35,23 @@ jobs:
         PROJECT_NAME=wp-test
     
         # Créer les répertoires distants s'ils n'existent pas
-        ssh $USER@$SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
-    
+        # ssh $USER@$SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
+        
         # Définir les autorisations
-        ssh $USER@$SERVER "chmod 755 $SERVICE_PATH $SERVICE_PATH/$PROJECT_NAME" || exit 1
+        # ssh $USER@$SERVER "chmod 755 $SERVICE_PATH $SERVICE_PATH/$PROJECT_NAME" || exit 1
+        ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/data -type f -exec chmod 0640 {} ;"
+        ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/data -type d -exec chmod 0750 {} ;"
     
         # Copier les fichiers avec rsync
         rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
-    
+
+    - name: Deploy to Server dev
+      run: |
+        # On se place dans le bon dossier 
+        ssh $USER@$SERVER "cd $SERVICE_PATH/$PROJECT_NAME" || exit 1
+
+        # Executer le docker-compose.yml
+        ssh $USER@$SERVER "docker-compose up -d" || exit 1
+        
+        # Pour voir les logs en temps réel
+        ssh $USER@$SERVER "docker-compose up" || exit 1
