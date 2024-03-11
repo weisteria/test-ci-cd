@@ -12,10 +12,10 @@ jobs:
     env:
       SERVER: archer.porte7.com
       USER: root
-      SERVICE_PATH: /datafs/dev/
+      SERVICE_PATH: /datafs/dev
       SERVICE_NAME: wp-test
       PROJECT_NAME: wp-test
-      SUBFOLDER_NAME: 1.0
+      SUBFOLDER_NAME: "1.0"
 
     steps:
     - name: Checkout Repository
