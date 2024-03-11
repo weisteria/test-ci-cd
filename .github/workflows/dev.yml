@@ -26,18 +26,20 @@ jobs:
     - name: Install rsync
       run: sudo apt-get update && sudo apt-get install rsync -y
 
-    - name: Deploy to Staging
+    - name: Deploy to Server dev
       run: |
         SERVER=archer.porte7.com
+        USER=root
         SERVICE_PATH=/datafs/dev/
         SERVICE_NAME=wp-test
         PROJECT_NAME=wp-test
-
+    
         # Créer les répertoires distants s'ils n'existent pas
-        ssh $SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
-
+        ssh $USER@$SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
+    
         # Définir les autorisations
-        ssh $SERVER "chmod 755 $SERVICE_PATH $SERVICE_PATH/$PROJECT_NAME" || exit 1
-
+        ssh $USER@$SERVER "chmod 755 $SERVICE_PATH $SERVICE_PATH/$PROJECT_NAME" || exit 1
+    
         # Copier les fichiers avec rsync
-        rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+    
