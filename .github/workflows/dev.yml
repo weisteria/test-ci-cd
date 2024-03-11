@@ -45,10 +45,10 @@ jobs:
         # Copier les fichiers avec rsync
         rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
 
-    - name: Deploy to Server dev
+    - name: Run Docker
       run: |
         # On se place dans le bon dossier 
-        ssh $USER@$SERVER "cd $SERVICE_PATH/$PROJECT_NAME" || exit 1
+        ssh $USER@$SERVER "cd /$SERVICE_PATH/$PROJECT_NAME" || exit 1
 
         # Executer le docker-compose.yml
         ssh $USER@$SERVER "docker-compose up -d" || exit 1
