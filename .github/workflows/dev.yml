@@ -33,4 +33,4 @@ jobs:
         SERVICE_NAME=wp-test
         PROJECT_NAME=wp-test
 
-        rsync -arouvH --exclude-from='exclude.txt' ./ $SERVER:${SERVICE_PATH}/${PROJECT_NAME}
+        rsync -arouvH ./ $SERVER:${SERVICE_PATH}/${PROJECT_NAME}
