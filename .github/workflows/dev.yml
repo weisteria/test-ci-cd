@@ -63,5 +63,6 @@ jobs:
 
     - name : Push Docker Image
       run: |
+        ssh $USER@$SERVER "docker tag wp-test:latest ${{ secrets.DOCKERHUB_USERNAME }}/wp-test:latest"
         ssh $USER@$SERVER "docker push ${{ secrets.DOCKERHUB_USERNAME }}/wp-test:latest" || exit 1
         echo "Docker Push Successful!"
