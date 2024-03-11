@@ -1,0 +1,57 @@
+# name: Deploy to Development Environment
+
+# on:
+#   push:
+#     branches:
+#       - dev
+
+# jobs:
+#   deploy-dev:
+#     runs-on: ubuntu-latest
+#     environment: devlopment
+
+#     steps:
+#     - name: Checkout Repository
+#       uses: actions/checkout@v4
+#       with:
+#         ref: dev
+
+#     - name: Set up Docker
+#       uses: docker/setup-buildx-action@v3
+
+#     - name: Build and Push Docker Image
+#       env:
+#         DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+#         DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+#         IMAGE_NAME: react-test
+#         IMAGE_TAG: development
+#       run: |
+#         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+#         docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+#         docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+#     - name: Run a script
+#       run: |
+#         echo "I am running a job in the dev env"
+name: Merge Dev into Staging
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Merge Dev into Staging
+      run: |
+        git config user.name "${{ github.actor }}"
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
+        git checkout staging
+        git pull origin dev
+        git push origin staging
+
