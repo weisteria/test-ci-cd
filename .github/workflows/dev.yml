@@ -39,8 +39,8 @@ jobs:
         
         # Définir les autorisations
         # ssh $USER@$SERVER "chmod 755 $SERVICE_PATH $SERVICE_PATH/$PROJECT_NAME" || exit 1
-        ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/data -type f -exec chmod 0640 {} ;"
-        ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/data -type d -exec chmod 0750 {} ;"
+        ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type f -exec chmod 0640 {} ;"
+        ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
     
         # Copier les fichiers avec rsync
         rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
