@@ -15,41 +15,47 @@ jobs:
       SERVICE_PATH: /datafs/dev/
       SERVICE_NAME: wp-test
       PROJECT_NAME: wp-test
+      SUBFOLDER_NAME: 1.0
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Setup SSH
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      run: |
-        eval $(ssh-agent -s)
-        mkdir -p ~/.ssh
-        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan archer.porte7.com >> ~/.ssh/known_hosts
+    # - name: Setup SSH
+    #   env:
+    #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    #   run: |
+    #     eval $(ssh-agent -s)
+    #     mkdir -p ~/.ssh
+    #     echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    #     chmod 600 ~/.ssh/id_rsa
+    #     ssh-keyscan archer.porte7.com >> ~/.ssh/known_hosts
 
-    - name: Install rsync
-      run: sudo apt-get update && sudo apt-get install rsync -y
+    # - name: Install rsync
+    #   run: sudo apt-get update && sudo apt-get install rsync -y
 
-    - name: Deploy to Server dev
-      run: |
-        # Créer les répertoires distants s'ils n'existent pas
-        # ssh $USER@$SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
+    # - name: Deploy to Server dev
+    #   run: |
+    #     # Créer les répertoires distants s'ils n'existent pas
+    #     # ssh $USER@$SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
         
-        # Définir les autorisations
-        # ssh $USER@$SERVER "chmod 755 $SERVICE_PATH $SERVICE_PATH/$PROJECT_NAME" || exit 1
-        # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type f -exec chmod 0640 {} ;"
-        # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
+    #     # Définir les autorisations
+    #     # ssh $USER@$SERVER "chmod 755 $SERVICE_PATH $SERVICE_PATH/$PROJECT_NAME" || exit 1
+    #     # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type f -exec chmod 0640 {} ;"
+    #     # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
     
-        # Copier les fichiers avec rsync
-        # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+    #     # Copier les fichiers avec rsync
+    #     # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
 
-    - name: Run Docker
+    # - name: Run Docker
+    #   run: |
+    #     # On exécute le docker-compose
+    #     ssh $USER@$SERVER "docker-compose -f ${SERVICE_PATH}/${PROJECT_NAME}/docker-compose.yml up -d" || exit 1
+
+    #     # Pour voir les logs en temps réel
+    #     ssh $USER@$SERVER "docker-compose -f ${SERVICE_PATH}/${PROJECT_NAME}/docker-compose.yml logs -n 10 -f" || exit 1
+
+    - name: Setup SSH
       run: |
-        # On exécute le docker-compose
-        ssh $USER@$SERVER "docker-compose -f ${SERVICE_PATH}/${PROJECT_NAME}/docker-compose.yml up" || exit 1
-
-        # Pour voir les logs en temps réel
-        ssh $USER@$SERVER "docker-compose -f ${SERVICE_PATH}/${PROJECT_NAME}/docker-compose.yml logs -n 10 -f" || exit 1
+        # Build l'image
+        ssh $USER@$SERVER "docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}; cd ${SERVICE_PATH}/${PROJECT_NAME}/${SUBFOLDER_NAME}; docker build -t wp ." ; docker push ${{ secrets.DOCKERHUB_USERNAME }}:/wp:latest || exit 1
