@@ -1,9 +1,10 @@
 name: Merge Dev into Staging
 
 on:
-  pull_request:
+  push:
     branches:
       - dev
+
 
 jobs:
   deploy:
