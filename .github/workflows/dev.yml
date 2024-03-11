@@ -55,8 +55,13 @@ jobs:
     #     # Pour voir les logs en temps réel
     #     ssh $USER@$SERVER "docker-compose -f ${SERVICE_PATH}/${PROJECT_NAME}/docker-compose.yml logs -n 10 -f" || exit 1
 
-    - name: Setup SSH
+    - name: Build Docker Image
       run: |
-        # Build l'image
         ssh $USER@$SERVER "docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}; cd ${SERVICE_PATH}/${PROJECT_NAME}/${SUBFOLDER_NAME}; docker build -t wp-test ." || exit 1
+        echo "Docker Build Successful!"
+
+
+    - name : Push Docker Image
+      run: |
         ssh $USER@$SERVER "docker push ${{ secrets.DOCKERHUB_USERNAME }}/wp-test:latest" || exit 1
+        echo "Docker Push Successful!"
