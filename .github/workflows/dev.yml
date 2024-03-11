@@ -33,6 +33,6 @@ jobs:
         SERVICE_PATH=/datafs/dev/
         SERVICE_NAME=wp-test
         PROJECT_NAME=wp-test
-        
+        ssh $SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME"
         chmod 755 /datafs /datafs/dev
         rsync -arouvH ./ $SERVER:${SERVICE_PATH}/${PROJECT_NAME}
