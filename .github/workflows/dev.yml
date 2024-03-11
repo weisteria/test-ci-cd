@@ -50,8 +50,7 @@ jobs:
       run: |
         # On se place dans le bon dossier 
         # ssh $USER@$SERVER "ls -la" || exit 1
-        ssh $USER@$SERVER "cd /datafs/dev/wp-test" || exit 1
-        ssh $USER@$SERVER "ls -l" || exit 1
+        ssh $USER@$SERVER "cd /datafs/dev/wp-test; ls -l" || exit 1
     
         # ssh $USER@$SERVER "cd ${SERVICE_PATH}/${PROJECT_NAME}" || exit 1
 
