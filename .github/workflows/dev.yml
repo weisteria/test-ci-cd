@@ -50,7 +50,7 @@ jobs:
       run: |
         # On se place dans le bon dossier
         # On exécute le docker-compose
-        ssh $USER@$SERVER "cd ${SERVICE_PATH}/${PROJECT_NAME}; docker-compose up -d;" || exit 1
+        ssh $USER@$SERVER "cd ${SERVICE_PATH}/${PROJECT_NAME}; ls -la; docker-compose up -d;" || exit 1
 
         # Pour voir les logs en temps réel
-        ssh $USER@$SERVER "docker-compose up" || exit 1
+        # ssh $USER@$SERVER "docker-compose up" || exit 1
