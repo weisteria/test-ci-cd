@@ -35,7 +35,7 @@
 name: Merge Dev into Staging
 
 on:
-  pull_request:
+  push:
     branches:
       - dev
 
@@ -51,11 +51,11 @@ jobs:
       run: ls -l -a
     
 
-    - name: Merge Dev into Staging
-      run: |
-        git config user.name "${{ github.actor }}"
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git checkout staging
-        git pull origin dev
-        git push origin staging
+    # - name: Merge Dev into Staging
+    #   run: |
+    #     git config user.name "${{ github.actor }}"
+    #     git config user.email "${{ github.actor }}@users.noreply.github.com"
+    #     git checkout staging
+    #     git pull origin dev
+    #     git push origin staging
 

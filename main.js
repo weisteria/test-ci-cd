@@ -13,7 +13,7 @@ document.querySelector('#app').innerHTML = `
     </a>
     <h1>Hello Vite!</h1>
     <div class="card">
-    <p>TEST LS/p>
+    <p>TEST LS Solo/p>
       <button id="counter" type="button"></button>
     </div>
     <p class="read-the-docs">
