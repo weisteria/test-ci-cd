@@ -7,7 +7,8 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest         #TODO Il n'y a pas une image plus "légère"?  ( Alpine, docker, etc.. )
+
 
     env:
       SERVER: archer.porte7.com
@@ -15,7 +16,11 @@ jobs:
       SERVICE_PATH: /datafs/dev
       SERVICE_NAME: wp-test
       PROJECT_NAME: wp-test
-      SUBFOLDER_NAME: "1.0"
+      SUBFOLDER_NAME: "1.0" 
+
+      #TODO : Dans votre cas, est ce utile d'avoir service name et project name?  
+      #TODO : portez attention au service path, une suppression survient si rapidement.
+
 
     steps:
     - name: Checkout Repository
@@ -29,7 +34,9 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan archer.porte7.com >> ~/.ssh/known_hosts
+        ssh-keyscan archer.porte7.com >> ~/.ssh/known_hosts 
+      #TODO Utilisez des variables pour le serveur, on sait jamais 
+
 
     # - name: Install rsync
     #   run: sudo apt-get update && sudo apt-get install rsync -y
@@ -57,12 +64,39 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        ssh $USER@$SERVER "docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}; cd ${SERVICE_PATH}/${PROJECT_NAME}/${SUBFOLDER_NAME}; docker build -t wp-test ." || exit 1
+        ssh $USER@$SERVER "docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}; cd ${SERVICE_PATH}/${PROJECT_NAME}/${SUBFOLDER_NAME}; docker build -t wp-test ." || exit 1      
         echo "Docker Build Successful!"
+
+      #TODO Utilisez des variables pour le nom de l'image
 
 
     - name : Push Docker Image
       run: |
-        ssh $USER@$SERVER "docker tag wp-test:latest ${{ secrets.DOCKERHUB_USERNAME }}/wp-test:latest"
+        ssh $USER@$SERVER "docker tag wp-test:latest ${{ secrets.DOCKERHUB_USERNAME }}/wp-test:latest" 
+      #TODO Utilisez des variables pour le nom de l'image
+
         ssh $USER@$SERVER "docker push ${{ secrets.DOCKERHUB_USERNAME }}/wp-test:latest" || exit 1
         echo "Docker Push Successful!"
+
+
+      #TODO Je ne trouve pas de push via rsync, donc pour l'instant vous creez une image, mais sans y déposer vos propres fichiers par la suite
+
+
+      # TODO START  Il n'est pas possible avec git d'avoir un fichier "machin.yml"  et que celui ci contienne les informations 
+
+      # on:
+      #   push:
+      #     branches:
+      #       - dev
+
+      # on:
+      #   push:
+      #     branches:
+      #       - "main"            
+
+      # https://docs.gitlab.com/ee/ci/environments/
+
+    
+      # TODO END Je pense bien sur à la maintenance et la correction des bugs du déploiement
+
+    
