@@ -15,10 +15,10 @@ jobs:
       SERVICE_PATH: ${{ secrets.SERVICE_PATH }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      PROJECT_NAME: ${{ secrets.IMAGE_NAME }}
-      SUBFOLDER_NAME: ${{ secrets.SUBFOLDER_NAME }}
+      PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
 
     steps:
+
     - name: Checkout Repository
       uses: actions/checkout@v4
 
@@ -35,18 +35,18 @@ jobs:
     - name: Install rsync
       run: sudo apt-get update && sudo apt-get install rsync -y
 
-    # - name: Deploy to Server dev
-    #   run: |
-    #     # Créer les répertoires distants s'ils n'existent pas
-    #     # ssh $USER@$SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
+    - name: Deploy to Server dev
+      run: |
+        # Créer les répertoires distants s'ils n'existent pas
+        # ssh $USER@$SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
         
-    #     # Définir les autorisations
-    #     # ssh $USER@$SERVER "chmod 755 $SERVICE_PATH $SERVICE_PATH/$PROJECT_NAME" || exit 1
-    #     # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type f -exec chmod 0640 {} ;"
-    #     # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
+        # Définir les autorisations
+        # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type f -exec chmod 0640 {} ;"
+        # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
     
-    #     # Copier les fichiers avec rsync
-    #     # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        # Copier les fichiers avec rsync
+        rsync -arouvH ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
 
     # - name: Run Docker
     #   run: |
@@ -58,7 +58,7 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        ssh $USER@$SERVER "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN; cd ${SERVICE_PATH}/${PROJECT_NAME}/${SUBFOLDER_NAME}; docker build -t $PROJECT_NAME ." || exit 1      
+        ssh $USER@$SERVER "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN; cd ${SERVICE_PATH}/${PROJECT_NAME}; docker build -t $PROJECT_NAME ." || exit 1      
         echo "Docker Build Successful!"
 
 
