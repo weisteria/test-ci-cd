@@ -7,20 +7,16 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest         #TODO Il n'y a pas une image plus "légère"?  ( Alpine, docker, etc.. )
-
+    runs-on: ubuntu-latest
 
     env:
-      SERVER: archer.porte7.com
-      USER: root
-      SERVICE_PATH: /datafs/dev
-      SERVICE_NAME: wp-test
-      PROJECT_NAME: wp-test
-      SUBFOLDER_NAME: "1.0" 
-
-      #TODO : Dans votre cas, est ce utile d'avoir service name et project name?  
-      #TODO : portez attention au service path, une suppression survient si rapidement.
-
+      SERVER: ${{ secrets.SERVER_NAME }}
+      USER: ${{ secrets.USER_NAME }}
+      SERVICE_PATH: ${{ secrets.SERVICE_PATH }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      PROJECT_NAME: ${{ secrets.IMAGE_NAME }}
+      SUBFOLDER_NAME: ${{ secrets.SUBFOLDER_NAME }}
 
     steps:
     - name: Checkout Repository
@@ -34,12 +30,10 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan archer.porte7.com >> ~/.ssh/known_hosts 
-      #TODO Utilisez des variables pour le serveur, on sait jamais 
+        ssh-keyscan $SERVER >> ~/.ssh/known_hosts 
 
-
-    # - name: Install rsync
-    #   run: sudo apt-get update && sudo apt-get install rsync -y
+    - name: Install rsync
+      run: sudo apt-get update && sudo apt-get install rsync -y
 
     # - name: Deploy to Server dev
     #   run: |
@@ -64,18 +58,14 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        ssh $USER@$SERVER "docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}; cd ${SERVICE_PATH}/${PROJECT_NAME}/${SUBFOLDER_NAME}; docker build -t wp-test ." || exit 1      
+        ssh $USER@$SERVER "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN; cd ${SERVICE_PATH}/${PROJECT_NAME}/${SUBFOLDER_NAME}; docker build -t $PROJECT_NAME ." || exit 1      
         echo "Docker Build Successful!"
-
-      #TODO Utilisez des variables pour le nom de l'image
 
 
     - name : Push Docker Image
       run: |
-        ssh $USER@$SERVER "docker tag wp-test:latest ${{ secrets.DOCKERHUB_USERNAME }}/wp-test:latest" 
-      #TODO Utilisez des variables pour le nom de l'image
-
-        ssh $USER@$SERVER "docker push ${{ secrets.DOCKERHUB_USERNAME }}/wp-test:latest" || exit 1
+        ssh $USER@$SERVER "docker tag $PROJECT_NAME:latest $DOCKERHUB_USERNAME/$PROJECT_NAME:latest" 
+        ssh $USER@$SERVER "docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:latest" || exit 1
         echo "Docker Push Successful!"
 
 
