@@ -38,7 +38,7 @@ jobs:
     - name: Deploy to Server dev
       run: |
         # Créer les répertoires distants s'ils n'existent pas
-        # ssh $USER@$SERVER "mkdir -p /$SERVICE_PATH/$PROJECT_NAME" || exit 1
+        ssh $USER@$SERVER "mkdir -p /$SERVICE_PATH/$PROJECT_NAME" || exit 1
         echo "Folder is create successfully"
 
         
