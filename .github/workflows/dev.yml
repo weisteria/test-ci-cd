@@ -38,16 +38,16 @@ jobs:
     - name: Deploy to Server dev
       run: |
         # Créer les répertoires distants s'ils n'existent pas
-        # ssh $USER@$SERVER "mkdir -p $SERVICE_PATH/$PROJECT_NAME" || exit 1
+        # ssh $USER@$SERVER "mkdir -p /$SERVICE_PATH/$PROJECT_NAME" || exit 1
         
         # Définir les autorisations
-        # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type f -exec chmod 0640 {} ;"
-        # ssh $USER@$SERVER "find ${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
+        # ssh $USER@$SERVER "find /${SERVICE_PATH}/${PROJECT_NAME}/ -type f -exec chmod 0640 {} ;"
+        # ssh $USER@$SERVER "find /${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
     
         # Copier les fichiers avec rsync
-        rsync -arouvH ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
-        # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:${SERVICE_PATH}/${PROJECT_NAME} || exit 1
-
+        rsync -arouvH ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        echo "Copie successful at /${SERVICE_PATH}/${PROJECT_NAME}/"
     # - name: Run Docker
     #   run: |
     #     # On exécute le docker-compose
