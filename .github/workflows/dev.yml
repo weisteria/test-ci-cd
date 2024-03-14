@@ -38,8 +38,9 @@ jobs:
     - name: Deploy to Server dev
       run: |
         # Créer les répertoires distants s'ils n'existent pas
+        ssh $USER@$SERVER "ls -la /$SERVICE_PATH" || exit 1
         ssh $USER@$SERVER "mkdir -p /$SERVICE_PATH/$PROJECT_NAME" || exit 1
-        echo "Folder is create successfully"
+        echo "Folder Create successfull"
 
         
         # Définir les autorisations
@@ -49,7 +50,7 @@ jobs:
         # Copier les fichiers avec rsync
         rsync -arouvH --exclude='.git' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
         # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
-        echo "Copie successful at /$SERVICE_PATH/$PROJECT_NAME/"
+        echo "Copy successful"
     # - name: Run Docker
     #   run: |
     #     # On exécute le docker-compose
