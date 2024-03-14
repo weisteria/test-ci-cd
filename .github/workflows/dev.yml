@@ -40,7 +40,7 @@ jobs:
         # Créer les répertoires distants s'ils n'existent pas
         ssh $USER@$SERVER "ls -la /$SERVICE_PATH" || exit 1
         ssh $USER@$SERVER "mkdir -p /$SERVICE_PATH/$PROJECT_NAME" || exit 1
-        echo "Folder Create successfull"
+        echo "Folder Created successfull"
 
         
         # Définir les autorisations
