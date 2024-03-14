@@ -48,7 +48,7 @@ services:
             MARIADB_DATABASE: wordpress
             MARIADB_INITDB_SKIP_TZINFO: "1"
 
-        image: registry.azeqsd.com:5000/wp-mysqli-fpm:1.5.4
+        image: registry.azeqsd.com:5000/wp-mysqli-fpm:1.5.5
 
         networks:
             - wp-base_network
