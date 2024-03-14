@@ -40,13 +40,15 @@ services:
     wp-base:
 
         environment:
+            # SSL_CERTIFICATE: /etc/letsencrypt/live/azeqsd.com/fullchain.pem
+            # SSL_CERTIFICATE_KEY: /etc/letsencrypt/live/azeqsd.com/privkey.pem
             MARIADB_ROOT_PASSWORD: wordpress
             MARIADB_USER: wordpress
             MARIADB_PASSWORD: g2aEFzKA6m95
             MARIADB_DATABASE: wordpress
             MARIADB_INITDB_SKIP_TZINFO: "1"
 
-        image: registry.azeqsd.com:5000/wp-mysqli-fpm:1.1
+        image: registry.azeqsd.com:5000/wp-mysqli-fpm:1.5.4
 
         networks:
             - wp-base_network
