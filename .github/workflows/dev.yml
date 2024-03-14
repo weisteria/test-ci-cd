@@ -47,10 +47,10 @@ jobs:
         # ssh $USER@$SERVER "find /${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
     
         # Copier les fichiers avec rsync
-        rsync -arouvH --exclude='.git' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        rsync -arouvH --exclude='.git' --exclude='docker-windows.yml' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
         # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
         echo "Copy successful"
-        
+
     # - name: Run Docker
     #   run: |
     #     # On exécute le docker-compose
@@ -59,17 +59,17 @@ jobs:
     #     # Pour voir les logs en temps réel
     #     ssh $USER@$SERVER "docker-compose -f ${SERVICE_PATH}/${PROJECT_NAME}/docker-compose.yml logs -n 10 -f" || exit 1
 
-    - name: Build Docker Image
-      run: |
-        ssh $USER@$SERVER "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN; cd /${SERVICE_PATH}/${PROJECT_NAME}; docker build -t $PROJECT_NAME ." || exit 1      
-        echo "Docker Build Successful!"
+    # - name: Build Docker Image
+    #   run: |
+    #     ssh $USER@$SERVER "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN; cd /${SERVICE_PATH}/${PROJECT_NAME}; docker build -t $PROJECT_NAME ." || exit 1      
+    #     echo "Docker Build Successful!"
 
 
-    - name : Push Docker Image
-      run: |
-        ssh $USER@$SERVER "docker tag $PROJECT_NAME:latest $DOCKERHUB_USERNAME/$PROJECT_NAME:latest" 
-        ssh $USER@$SERVER "docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:latest" || exit 1
-        echo "Docker Push Successful!"
+    # - name : Push Docker Image
+    #   run: |
+    #     ssh $USER@$SERVER "docker tag $PROJECT_NAME:latest $DOCKERHUB_USERNAME/$PROJECT_NAME:latest" 
+    #     ssh $USER@$SERVER "docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:latest" || exit 1
+    #     echo "Docker Push Successful!"
 
 
       #TODO Je ne trouve pas de push via rsync, donc pour l'instant vous creez une image, mais sans y déposer vos propres fichiers par la suite

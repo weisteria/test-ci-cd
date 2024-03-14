@@ -59,8 +59,3 @@ services:
 
             - ${PWD}/app:/var/www
             - ${PWD}/db:/var/lib/mysql
-
-        deploy:
-            placement:
-                constraints:
-                    - node.hostname == bca5f8df.azeqsd.com

@@ -1,0 +1,61 @@
+###################################################################
+# Stacks Name -
+
+# ------------------------------------------------------------------
+# Description
+
+# ------------------------------------------------------------------
+
+# Options diverses
+#
+
+
+# Author    :Chrisline Lin
+
+# Email     :chrisline@agencerjs.com
+
+###################################################################
+
+
+version: "3.6"
+
+###################################################################
+# Déclaration des interfaces réseaux
+#
+
+networks:
+    wp-base_network:
+        name: wp-base_network
+
+###################################################################
+# Services de base
+#
+
+services:
+
+###################################################################
+# Déclaration de service :
+#
+
+    wp-base:
+
+        environment:
+            MARIADB_ROOT_PASSWORD: wordpress
+            MARIADB_USER: wordpress
+            MARIADB_PASSWORD: g2aEFzKA6m95
+            MARIADB_DATABASE: wordpress
+            MARIADB_INITDB_SKIP_TZINFO: "1"
+
+        image: registry.azeqsd.com:5000/wp-mysqli-fpm:1.1
+
+        networks:
+            - wp-base_network
+
+
+        ports:
+            - 8080:80
+
+        volumes:
+
+            - ./app:/var/www
+            - ./db:/var/lib/mysql
