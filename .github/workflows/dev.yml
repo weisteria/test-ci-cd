@@ -12,10 +12,10 @@ jobs:
     env:
       SERVER: ${{ secrets.SERVER_NAME }}
       USER: ${{ secrets.USER_NAME }}
+      PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
       SERVICE_PATH: ${{ secrets.SERVICE_PATH }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
 
     steps:
 
@@ -38,7 +38,6 @@ jobs:
     - name: Deploy to Server dev
       run: |
         # Créer les répertoires distants s'ils n'existent pas
-        ssh $USER@$SERVER "ls -la /$SERVICE_PATH" || exit 1
         ssh $USER@$SERVER "mkdir -p /$SERVICE_PATH/$PROJECT_NAME" || exit 1
         echo "Folder Created successfull"
 
@@ -51,6 +50,7 @@ jobs:
         rsync -arouvH --exclude='.git' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
         # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
         echo "Copy successful"
+        
     # - name: Run Docker
     #   run: |
     #     # On exécute le docker-compose
