@@ -52,7 +52,6 @@ services:
         networks:
             - wp-base_network
 
-
         ports:
             - 8080:80
 
