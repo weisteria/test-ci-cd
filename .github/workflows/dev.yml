@@ -1,61 +1,95 @@
-# name: Deploy to Development Environment
-
-# on:
-#   push:
-#     branches:
-#       - dev
-
-# jobs:
-#   deploy-dev:
-#     runs-on: ubuntu-latest
-#     environment: devlopment
-
-#     steps:
-#     - name: Checkout Repository
-#       uses: actions/checkout@v4
-#       with:
-#         ref: dev
-
-#     - name: Set up Docker
-#       uses: docker/setup-buildx-action@v3
-
-#     - name: Build and Push Docker Image
-#       env:
-#         DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-#         DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
-#         IMAGE_NAME: react-test
-#         IMAGE_TAG: development
-#       run: |
-#         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-#         docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
-#         docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG
-#     - name: Run a script
-#       run: |
-#         echo "I am running a job in the dev env"
-name: Merge Dev into Staging
+name: Deploy to server
 
 on:
-  pull_request:
+  push:
     branches:
       - dev
 
 jobs:
-  merge:
+  deploy:
     runs-on: ubuntu-latest
 
+    env:
+      SERVER: ${{ secrets.SERVER_NAME }}
+      USER: ${{ secrets.USER_NAME }}
+      PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+      SERVICE_PATH: ${{ secrets.SERVICE_PATH }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
     steps:
+
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: List Files
-      run: ls -l -a
-    
-
-    - name: Merge Dev into Staging
+    - name: Setup SSH
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
-        git config user.name "${{ github.actor }}"
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git checkout staging
-        git pull origin dev
-        git push origin staging
+        eval $(ssh-agent -s)
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan $SERVER >> ~/.ssh/known_hosts 
 
+    - name: Install rsync
+      run: sudo apt-get update && sudo apt-get install rsync -y
+
+    - name: Deploy to Server dev
+      run: |
+        # Créer les répertoires distants s'ils n'existent pas
+        ssh $USER@$SERVER "mkdir -p /$SERVICE_PATH/$PROJECT_NAME" || exit 1
+        echo "Folder Created successfull"
+
+        
+        # Définir les autorisations
+        # ssh $USER@$SERVER "find /${SERVICE_PATH}/${PROJECT_NAME}/ -type f -exec chmod 0640 {} ;"
+        # ssh $USER@$SERVER "find /${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
+    
+        # Copier les fichiers avec rsync
+        rsync -arouvH --exclude='.git' --exclude='docker-windows.yml' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        echo "Copy successful"
+
+    # - name: Run Docker
+    #   run: |
+    #     # On exécute le docker-compose
+    #     ssh $USER@$SERVER "docker-compose -f ${SERVICE_PATH}/${PROJECT_NAME}/docker-compose.yml up -d" || exit 1
+
+    #     # Pour voir les logs en temps réel
+    #     ssh $USER@$SERVER "docker-compose -f ${SERVICE_PATH}/${PROJECT_NAME}/docker-compose.yml logs -n 10 -f" || exit 1
+
+    # - name: Build Docker Image
+    #   run: |
+    #     ssh $USER@$SERVER "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN; cd /${SERVICE_PATH}/${PROJECT_NAME}; docker build -t $PROJECT_NAME ." || exit 1      
+    #     echo "Docker Build Successful!"
+
+
+    # - name : Push Docker Image
+    #   run: |
+    #     ssh $USER@$SERVER "docker tag $PROJECT_NAME:latest $DOCKERHUB_USERNAME/$PROJECT_NAME:latest" 
+    #     ssh $USER@$SERVER "docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:latest" || exit 1
+    #     echo "Docker Push Successful!"
+
+
+      #TODO Je ne trouve pas de push via rsync, donc pour l'instant vous creez une image, mais sans y déposer vos propres fichiers par la suite
+
+
+      # TODO START  Il n'est pas possible avec git d'avoir un fichier "machin.yml"  et que celui ci contienne les informations 
+
+      # on:
+      #   push:
+      #     branches:
+      #       - dev
+
+      # on:
+      #   push:
+      #     branches:
+      #       - "main"            
+
+      # https://docs.gitlab.com/ee/ci/environments/
+
+    
+      # TODO END Je pense bien sur à la maintenance et la correction des bugs du déploiement
+
+    
