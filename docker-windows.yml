@@ -38,6 +38,7 @@ services:
 #
 
     wp-base:
+
         environment:
             # SSL_CERTIFICATE: /etc/letsencrypt/live/azeqsd.com/fullchain.pem
             # SSL_CERTIFICATE_KEY: /etc/letsencrypt/live/azeqsd.com/privkey.pem
@@ -47,7 +48,7 @@ services:
             MARIADB_DATABASE: wordpress
             MARIADB_INITDB_SKIP_TZINFO: "1"
 
-        image: registry.azeqsd.com:5000/wp-mysqli-fpm:1.5.5
+        image: registry.azeqsd.com:5000/wp-mysqli-fpm:1.5.6
 
         networks:
             - wp-base_network
@@ -60,7 +61,3 @@ services:
             - ./app:/var/www
             - ./db:/var/lib/mysql
             
-        # deploy:
-        #     placement:
-        #         constraints:
-        #             - node.hostname == archer.porte7.com
