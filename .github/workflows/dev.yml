@@ -47,7 +47,7 @@ jobs:
         # ssh $USER@$SERVER "find /${SERVICE_PATH}/${PROJECT_NAME}/ -type d -exec chmod 0750 {} ;"
     
         # Copier les fichiers avec rsync
-        rsync -arouvH --exclude='.git' --exclude='docker-windows.yml' --exclude='db' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
+        rsync -arouvH --exclude='.git' --exclude='docker-windows.yml' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
         # rsync -arouvH --exclude='.git' --exclude='node_modules' ./ $USER@$SERVER:/${SERVICE_PATH}/${PROJECT_NAME} || exit 1
         echo "Copy successful"
 

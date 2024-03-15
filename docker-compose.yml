@@ -61,7 +61,7 @@ services:
             - ${PWD}/app:/var/www
             - ${PWD}/db:/var/lib/mysql
 
-        # deploy:
-        #     placement:
-        #         constraints:
-        #             - node.hostname == archer.porte7.com
+        deploy:
+            placement:
+                constraints:
+                    - node.hostname == archer.porte7.com
