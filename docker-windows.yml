@@ -59,3 +59,8 @@ services:
 
             - ./app:/var/www
             - ./db:/var/lib/mysql
+            
+        # deploy:
+        #     placement:
+        #         constraints:
+        #             - node.hostname == archer.porte7.com
